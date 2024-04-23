@@ -1,0 +1,443 @@
+---
+title: "Вариативность в русском языке билингвов"
+subtitle: "для курса «Основные приложения математики», НИУ ВШЭ"
+author: 
+  - name: "Г. А. Мороз\n\nМеждународная лаборатория языковой конвергенции"
+date: "04/23/2024"
+date-format: "D.MM.YYYY"
+format: 
+  beamer:
+    theme: Singapore
+    mainfont: Brill
+    monofont: Iosevka
+    df-print: kable
+    pdf-engine: xelatex
+    cite-method: natbib
+    classoption: t
+    header-includes: |
+       \setbeamertemplate{footline}[page number]
+urlcolor: teal
+citecolor: teal
+echo: false
+fig-align: center
+bibliography: bibliography.bib
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| include: false
+# setwd("/home/agricolamz/work/materials/2024.04.23_HSE_talk_to_math")
+library(tidyverse)
+theme_set(theme_minimal()+theme(text = element_text(size = 16), legend.position = "bottom"))
+library(tidytext)
+```
+
+# Прескриптивное vs. дескриптивное
+
+## #тыжлингвист
+
+>- знает как правильно: писать, употреблять слова/выражения, ...
+>- умеет читать на всех письменностях мира
+>- знает все языки на свете
+>- умеет распознавать каждый язык на слух
+>- может рассказать о происхождении каждого слова
+>- не может разбираться в статистике и программировании
+>- \Large все перечисленное выше --- чушь
+
+##  Обо мне
+
+- полевой исследователь (30 поездок, почти все на Кавказ)
+- фонетист, фонолог, квантитативный лингвист, занимаюсь линвистической географией
+- преподаю статистику и R (язык программирования)
+- написал несколько лингвистических пакетов для R
+    - [`lingtypology`](https://ropensci.github.io/lingtypology/)
+    - [`phonfieldwork`](https://docs.ropensci.org/phonfieldwork/)
+    - [`lingglosses`](https://github.com/agricolamz/lingglosses)
+
+## Прескриптивная vs. дескриптивная лингвистика
+
+- прескриптивная \pause
+- вся остальная (дескриптивная)
+    - каталогизация языкового разнообразия, описание языковых контактов
+    - исследования и документация грамматики, фонетики и лексики конкретных языков
+    - исследования распределения грамматических/фонетических/лексических особенностей в языках мира
+    - исследования и документация исторических изменений грамматических/фонетических/лексических особенностей языков
+    - исследования когнитивных способностей человека и других животных, связанных с языком (усвоение, потеря языка и др.)
+    - языковые аспекты исследования мозга
+    - исследования в области синтеза и распознавания речи и языка
+    - исследования в области NLP, пробинг языковых моделей и т. п.
+    - ...
+
+## Прескриптивная vs. дескриптивная лингвистика
+
+Запишите где-нибудь, что изображено на картинке (рис. Т. Пановой).
+
+```{r}
+#| fig-align: "center"
+
+knitr::include_graphics("images/01_ladle.jpg")
+```
+
+## Прескриптивная vs. дескриптивная лингвистика
+
+Это часть опроса И. Левина 2021 года:
+
+```{r}
+#| out-width: 108%
+
+knitr::include_graphics("images/02_ladle_map.jpg")
+```
+
+```{r}
+#| out-height: 25%
+knitr::include_graphics("images/02_ladle_legend.png")
+```
+
+# Корпусная лингвистика
+
+## Корпусная лингвистика
+
+Корпусная лингвистика --- это область лингвистики, которая занимается исследованием языковых явлений на материале некоторых собраний языкового материала. В большинстве случаев это письменные тексты, однако это может быть аудио и даже видео корпуса.
+
+Среди корпусов русского языка можно назвать:
+
+- [Национальный корпус русского языка](https://ruscorpora.ru/)
+    - более 1.5 млрд слов
+    - много подкорпусов (газетный, устный, параллельный, диалектный, поэтический, исторические)
+- [Google Books Ngram Viewer](https://books.google.com/ngrams/)
+- ...
+
+## *Отложить в ... ящик*
+
+```{r}
+#| eval: false
+
+library(ngramr)
+iz <- ngram(phrases = c("в долгий ящик", "в дальний ящик"), 
+            corpus = "ru-2019",
+            year_start = 1850)
+
+iz |>  
+  ggplot(aes(x = Year, y = Frequency, color = Phrase))+
+  geom_line()+
+  theme_google()+
+  labs(caption = "на основе Google Books Ngram Viewer",
+       x = NULL, y = "частотность", color = NULL)
+ggsave(filename = "images/03_google_n_gram.png", bg = "white", width = 9, height = 6)
+```
+
+\pause
+
+```{r}
+#| out-width: 108%
+knitr::include_graphics("images/03_google_n_gram.png")
+```
+
+## *Отложить в ... ящик*
+
+```{r}
+#| eval: false
+
+read_csv("data/ruscorpora_otlozhit_v_yashik.csv") |> 
+  ggplot(aes(created, fill = example))+
+  geom_histogram()+
+  theme_minimal()+
+  labs(x = NULL, y = NULL, fill = NULL,
+       caption = "на основе Национального корпуса русского языка")+
+  theme(legend.position = "top")
+ggsave("images/04_rnc.png", bg = "white", width = 7, height = 5)
+```
+
+
+```{r}
+#| out-width: 103%
+knitr::include_graphics("images/04_rnc.png")
+```
+
+
+# Наши ресурсы
+
+## Ресурсы Международной лаборатории языковой конвергенции
+
+- [lingconlab.ru](lingconlab.ru)
+- 22 устных диалектных корпуса
+- 8 устных билингвальных корпусов
+- 10 корпусов малых языков
+- другие
+    - словари (мегебский, рутульский, тукитинский, хваршинский, даргинский)
+    - Типологический атлас языков Дагестана
+    - Атлас многоязычия в Дагестане
+    - Атлас рутульских диалектов
+    - Корпус Просодии Русских Диалектов (ПРуД)
+    - ...
+
+## 8 устных билингавльных корпусов
+
+```{r}
+#| fig-align: "center"
+#| out-width: 95%
+
+knitr::include_graphics("images/07_bilingual_corpora.png")
+```
+
+## 8 устных билингавльных корпусов
+
+```{r}
+#| fig-align: "center"
+#| out-width: 108%
+
+knitr::include_graphics("images/08_bilinguals.png")
+```
+
+## Группа DiaL2
+
+```{r}
+#| out-width: 70%
+#| layout-ncol: 3
+#| fig-align: center
+#| fig-subcap: 
+#|   - "М. В. Ермолова"
+#|   - "С. С. Земичева"
+#|   - "Н. А. Кошелюк"
+#|   - "Г. А. Мороз"
+#|   - "К. Наккарато"
+#|   - "А. В. Яковлева"
+
+knitr::include_graphics("images/masha.jpeg")
+knitr::include_graphics("images/sveta.jpeg")
+knitr::include_graphics("images/natasha.jpeg")
+knitr::include_graphics("images/garik.jpeg")
+knitr::include_graphics("images/chiara.jpg")
+knitr::include_graphics("images/nastya.jpg")
+```
+
+# Исследование билингвального русского
+
+## Нестандартные количественные конструкции в речи билингвов
+
+- система русских числительных сложная
+- системы числительных в L1 доступных нам корпусов значительно проще
+- количественные конструкции в речи билингвов исследовались в работах [@stoynova19; @stoynova21]
+- В работе [@stoynova21] употребление нестанадартных конструкций объясняется контактом
+- Увидим ли мы такой же эффект на основе данных наших корпусов?
+
+## Данные
+
+- Сначала мы автоматически отобрали **7,376** контекстов
+- Для анализа мы отобрали **1,748** примеров
+
+(@) *Пешком ходил Верхний Дженгутай **пять километра**.* (дагест.)
+
+(@) *Этот меньше, после **двое аборт** делала одну.* (марийский)
+
+- Примеры размечены по некоторым параметрам
+    - лингвистическим
+        - [коллокационность](https://ruscorpora.ru/results?search=CocBGlUKUxIfCgkKA2xleBICCgAKEgoEZm9ybRIKCgjQv9GP0YLRjBIwCgoKA2xleBIDCgEqCgsKBWdyYW1tEgIKAAoVCgRkaXN0Ig0I%2Ff%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARADKicKCAgAEAoYMiAKEAUgACiSi5X33dvSCTIEZGljZUAFagQwLjk1eAAyAggBOgEHMAE%3D) комбинации числительного + существительного
+        - тип числительного (собирательные *двое*, *трое*, паукальные *два*, *три*, другие)
+    - социолингвистическим
+        - год рождения
+        - пол
+        - образование
+        - первый язык
+
+## Данные
+
+```{r}
+#| out-width: 93%
+knitr::include_graphics("images/11_df_structure_numerals.png")
+```
+
+## К сожалению, данные очень разнородные
+
+```{r}
+#| out-height: 93%
+knitr::include_graphics("images/12_corpora_socio.png")
+```
+
+## Моделирование
+
+Мы запустили иерархическую логистическую регрессию со смешанными эффектами, предсказывая **вероятность нестандартной формы**.
+
+## Моделирование: регрессия
+
+```{r}
+#| out-height: 53%
+#| fig-align: center  
+knitr::include_graphics("images/17_regression_1.png")
+```
+
+- свободный член (intercept) -- значение $y$ при $x = 0$;
+- угловой коэффициент (slope) -- изменение $y$ при изменении $x$ на одну единицу.
+
+$$y_i = \hat{\beta_0} + \hat{\beta_1}\times x_i + \epsilon_i$$
+
+## Моделирование: множественная регрессия
+
+$$y_i = \hat\beta_0 + \hat\beta_1 \times x_{1i}+ \dots+ \hat\beta_n \times x_{ni} + \epsilon_i,$$
+
+* $x_{ki}$ --- $i$-ый элемент векторов значений $X_1, \dots, X_n$;
+* $y_i$ --- $i$-ый элемент вектора значений $Y$;
+* $\hat\beta_0$ --- оценка случайного члена (intercept);
+* $\hat\beta_k$ --- коэфциент при переменной $X_{k}$;
+* $\epsilon_i$ --- $i$-ый остаток, разница между оценкой модели ($\hat\beta_0 + \hat\beta_1 \times x_i$) и реальным значением $y_i$; весь вектор остатков иногда называют случайным шумом.
+
+## Моделирование: регрессия со смешенными эффектами
+
+$$y_i = X_{i} \times \hat\beta + Z_{i}\times \hat b_n  + \epsilon_i,$$
+
+* $y_i$ --- $i$-ый элемент вектора значений $Y$;
+* $X_{i}$ --- $i$-ый элемент из множества переменных $X_1, \dots, X_n$;
+* $Z_{i}$ --- $i$-ый элемент из множества группирующих переменных случайных эффектов $Z_1, \dots, Z_n$;
+* $\hat\beta$ --- оценка коэффициентов при переменных $X$;
+* $\hat b_i$ --- случайный нормальнораспределенный шум $Z_{i}$;
+* $\epsilon_i$ --- $i$-ый остаток, разница между оценкой модели и реальным значением $y_i$; весь вектор остатков иногда называют случайным шумом.
+
+## Моделирование: логистическая регрессия
+
+В регрессии мы хотим чего-то такого:
+$$\underbrace{y}_{[-\infty, +\infty]}=\underbrace{\mbox{β}_0+\mbox{β}_1\cdot x_1+\mbox{β}_2\cdot x_2 + \dots +\mbox{β}_k\cdot x_k +\mbox{ε}_i}_{[-\infty, +\infty]}$$
+
+Однако если y --- бинарные ответ, то, получается чушь. Поэтому используют логарифм шансов:
+
+Шансы — отношение количества успехов к количеству неудач:
+$$odds = \frac{p}{1-p} = \frac{p\mbox{(успеха)}}{p\mbox{(неудачи)}}, odds \in [0, +\infty]$$
+
+Натуральный логарифм шансов:
+$$\log(odds) \in [-\infty, +\infty]$$
+
+## Моделирование
+
+Мы запустили иерархическую логистическую регрессию со смешанными эффектами, предсказывая **вероятность нестандартной формы**
+
+- основные эффекты
+    - коллокационность ***
+    - тип числительного ***
+    - образование *
+    - год рождения *
+- случайные эффекты
+    - носитель вложен в первый язык
+
+## Предсказания модели
+
+```{r}
+#| out-height: 93%
+knitr::include_graphics("images/13_model_prediction_by_dice_coefficient_education_num_type.png")
+```
+
+## Выпадение предлогов в речи билингвов
+
+- Для анализа мы отобрали 5005 контекстов из трех корпусов: бесермянского (1438), марийского (1707), звенигородского (1860):
+- *Со второго курса что ли практика началась, _ больнице.* (марийский русский)
+- *Вот, отремонтировал _ трудом пополам, китайские часы -то.* (бесермянский русский)
+- *Жених приходит _ бабе.* (бесермянский русский)
+
+## Выпадение предлогов в речи билингвов
+
+- Примеры размечены по некоторым параметрам
+    - есть ли опущение предлога
+    - тип предлога: *в*, *с*, *к*
+    - лингвистическим
+        - [коллокационность](https://ruscorpora.ru/results?search=CocBGlUKUxIfCgkKA2xleBICCgAKEgoEZm9ybRIKCgjQv9GP0YLRjBIwCgoKA2xleBIDCgEqCgsKBWdyYW1tEgIKAAoVCgRkaXN0Ig0I%2Ff%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARADKicKCAgAEAoYMiAKEAUgACiSi5X33dvSCTIEZGljZUAFagQwLjk1eAAyAggBOgEHMAE%3D) комбинации предлога + существительного
+        - первый звук следующего слова
+    - социолингвистическим
+        - год рождения
+        - пол
+        - количество лет обучения
+        - первый язык
+
+## Данные
+
+```{r}
+#| out-width: 100%
+knitr::include_graphics("images/14_df_structure_prepositions.png")
+```
+
+## Моделирование
+
+Мы запустили иерархическую логистическую регрессию со смешанными эффектами, предсказывая **вероятность выпадения предлога**:
+
+- основные эффекты
+    - коллокационность **
+    - предлог **
+    - год рождения **
+    - корпус *
+- случайные эффекты
+    - носитель
+
+## Предсказания модели
+
+```{r}
+#| out-height: 93%
+knitr::include_graphics("images/15_model_prediction_by_dice_coefficient_corpus_preposition.png")
+```
+
+## Предсказания модели
+
+```{r}
+#| out-height: 93%
+knitr::include_graphics("images/16_model_prediction_by_year_corpus_preposition.png")
+```
+
+# Согласие разметчиков
+
+## Согласие разметчиков
+
+Когда мы анализировали выпадение предлогов, мы слушали аудиозаписи.
+
+>- сравнение того, насколько решение аннотатоторов было единообразное делается при помощи мер согласия (каппа Коэна, каппа Фляйса, Intra-class correlation coefficient)
+>- мы попросили студентов прошлого года курса "Основные приложения математики" поучаствовать с разметкой 
+>- а потом мы запустили кластеризацию
+
+## Согласие разметчиков
+
+```{r}
+#| out-height: 93%
+
+annotation <- read_csv("data/annotation.csv")
+
+library(widyr)
+annotation |> 
+  mutate(id = 1:n()) |> 
+  pivot_longer(names_to = "annotator", values_to = "annotation", s19:l4) |> 
+  na.omit() |> 
+  mutate(annotation = str_c(id, " ", annotation)) |> 
+  pairwise_count(annotator, annotation) ->
+  df_pairwise_same
+
+annotation |> 
+  mutate(id = 1:n()) |> 
+  pivot_longer(names_to = "annotator", values_to = "annotation", s19:l4) |> 
+  na.omit() |> 
+  mutate(annotation = str_c(id, " ", "1")) |> 
+  pairwise_count(annotator, annotation) |> 
+  rename(total = n) ->
+  df_pairwise_total
+
+library(ape)
+library(phangorn)
+
+df_pairwise_total |> 
+  left_join(df_pairwise_same) |> 
+  mutate(ratio = 1-n/total) |> 
+  select(-total, -n) |> 
+  arrange(item2, item1) |> 
+  pivot_wider(names_from = item2, values_from = ratio) |> 
+  arrange(item1) |> 
+  select(-item1) |> 
+  t() |> 
+  as.dist() ->
+  dist
+
+dist |>   
+  hclust() |> 
+  plot()
+```
+
+## Заключение
+
+>- Методы корпусной лингвистики позволяют получать и анализировать данные для документации языковой вариативности
+>- В обоих независимых исследованиях мера коллокационности оказывалась существенной при моделировании вариативности
+>- Это соотносится с идеей, что частотность единиц играет важную роль в становлении языка у детей и в изменении языка [@bybee06; @bybee01; @tomasello05; @wolter13].
+
+# Список литературы
